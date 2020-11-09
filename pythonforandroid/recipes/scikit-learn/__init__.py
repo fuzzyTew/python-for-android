@@ -17,4 +17,5 @@ class SKLearnRecipe(CythonRecipe):
         env['SKLEARN_FAIL_NO_OPENMP'] = '1'
         return env
 
+
 recipe = SKLearnRecipe()
