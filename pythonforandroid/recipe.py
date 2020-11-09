@@ -362,9 +362,11 @@ class Recipe(with_metaclass(RecipeMeta)):
                     raise ValueError(
                         ('Received {}sum from both the {} recipe '
                          'and its url').format(alg, self.name))
+                print('set', alg, 'from instance attribute', alg + 'sum')
                 expected_digests[alg] = getattr(self, alg + 'sum')
             elif ma:
                 url = ma.group(1)
+                print('set', alg, 'from url', url)
                 expected_digests[alg] = ma.group(2)
 
         shprint(sh.mkdir, '-p', join(self.ctx.packages_path, self.name))
@@ -399,6 +401,7 @@ class Recipe(with_metaclass(RecipeMeta)):
                 shprint(sh.touch, marker_filename)
 
                 if exists(filename) and isfile(filename):
+                    print('expected_digests:', expected_digests)
                     for alg, expected_digest in expected_digests.items():
                         current_digest = algsum(alg, filename)
                         if current_digest != expected_digest:
