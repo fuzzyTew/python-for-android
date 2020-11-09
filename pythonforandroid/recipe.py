@@ -356,16 +356,17 @@ class Recipe(with_metaclass(RecipeMeta)):
         url = self.versioned_url
         expected_digests = {}
         for alg in set(hashlib.algorithms_guaranteed) | set(('md5', 'sha512', 'blake2b')):
-            ma = match(u'^(.+)#' + alg + u'=([0-9a-f]{32,})$', url)  # fragmented URL?
-            if hasattr(self, alg + 'sum'):
-                if ma:
+            expected_digest = getattr(self, alg + 'sum')
+            ma = match(u'^(.+)#' + alg + u'=([0-9a-f]{32,})$', url)
+            if ma:                # fragmented URL?
+                if expected_digest:
                     raise ValueError(
                         ('Received {}sum from both the {} recipe '
                          'and its url').format(alg, self.name))
-                expected_digests[alg] = getattr(self, alg + 'sum')
-            elif ma:
                 url = ma.group(1)
-                expected_digests[alg] = ma.group(2)
+                expected_digest = ma.group(2)
+            if expected_digest:
+                expected_digests[alg] = expected_digest
 
         shprint(sh.mkdir, '-p', join(self.ctx.packages_path, self.name))
 
